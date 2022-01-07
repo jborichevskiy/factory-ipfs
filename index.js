@@ -30,8 +30,15 @@ polka()
     );
     next();
   })
-  .post('/upload', async (req, res) => {
-    const data = await node.add(req.files.files.data);
+  .post("/upload", async (req, res) => {
+    console.log(req.files.undefined);
+    // workaround as IPFS expects an object with either
+    // a content or a path field. We have data and a null tempPath
+    let pseudoFile = {
+      ...req.files.undefined,
+      content: req.files.undefined.data,
+    };
+    const data = await node.add(pseudoFile);
     return res.json({ hash: data.path });
   })
   .post('/uploadJSON', async (req, res) => {
